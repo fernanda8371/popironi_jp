@@ -48,6 +48,16 @@ logs/
 # IDEs
 .vscode/
 .idea/
+
+# Audio generado
+generated_audio/
+*.wav
+*.mp3
+*.ogg
+
+# Flask
+instance/
+.webassets-cache
 *.swp
 *.swo
 *~

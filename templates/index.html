@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Melodías IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f5f5f7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 48px 40px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            max-width: 480px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+            font-size: 2.2em;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #86868b;
+            margin-bottom: 40px;
+            font-size: 0.95em;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+            font-weight: 500;
+            font-size: 0.95em;
+            letter-spacing: -0.2px;
+        }
+
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #d2d2d7;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #1d1d1f;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236e6e73' d='M1.41 0L6 4.58 10.59 0 12 1.42l-6 6-6-6z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        select:hover {
+            border-color: #86868b;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #1d1d1f;
+            box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: #1d1d1f;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-top: 12px;
+            letter-spacing: -0.2px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #e5e5e7;
+            border-top: 3px solid #1d1d1f;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .resultado {
+            display: none;
+            margin-top: 32px;
+            padding: 24px;
+            background: #f5f5f7;
+            border-radius: 12px;
+            border: 1px solid #e5e5e7;
+        }
+
+        .resultado h3 {
+            color: #1d1d1f;
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 1.1em;
+            letter-spacing: -0.3px;
+        }
+
+        .prompt-box {
+            background: white;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #6e6e73;
+            font-size: 0.95em;
+            border: 1px solid #e5e5e7;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 10px;
+        }
+
+        .caracteristicas {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .caracteristica {
+            background: white;
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid #e5e5e7;
+        }
+
+        .caracteristica h4 {
+            color: #6e6e73;
+            margin-bottom: 10px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .caracteristica p {
+            color: #1d1d1f;
+            font-size: 0.9em;
+            margin: 6px 0;
+        }
+
+        .error {
+            display: none;
+            background: #fff;
+            color: #d1180b;
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid #d1180b;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 32px 24px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .caracteristicas {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Popironi</h1>
+
+        <form id="generadorForm">
+            <div class="form-group">
+                <label for="sentimiento">
+                    Sentimiento:
+                </label>
+                <select id="sentimiento" name="sentimiento" required>
+                    {% for sentimiento in sentimientos %}
+                    <option value="{{ sentimiento }}">{{ sentimiento.capitalize() }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="lugar">
+                    Lugar:
+                </label>
+                <select id="lugar" name="lugar" required>
+                    {% for lugar in lugares %}
+                    <option value="{{ lugar }}">{{ lugar.capitalize() }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn" id="generarBtn">
+                Generar Melodía
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Generando tu melodía...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="resultado" id="resultado">
+            <h3>✨ ¡Melodía Generada!</h3>
+            <div class="prompt-box" id="promptBox"></div>            <div class="prompt-box" id="aiDescription" style="font-style: italic; color: #1d1d1f;"></div>            
+            <audio controls id="audioPlayer">
+                Tu navegador no soporta el elemento de audio.
+            </audio>
+
+            <div class="caracteristicas">
+                <div class="caracteristica">
+                    <h4>Sentimiento</h4>
+                    <div id="infoSentimiento"></div>
+                </div>
+                <div class="caracteristica">
+                    <h4>Ambiente</h4>
+                    <div id="infoLugar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('generadorForm');
+        const loading = document.getElementById('loading');
+        const resultado = document.getElementById('resultado');
+        const errorDiv = document.getElementById('error');
+        const generarBtn = document.getElementById('generarBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Resetear estados
+            loading.style.display = 'block';
+            resultado.style.display = 'none';
+            errorDiv.style.display = 'none';
+            generarBtn.disabled = true;
+
+            const sentimiento = document.getElementById('sentimiento').value;
+            const lugar = document.getElementById('lugar').value;
+
+            try {
+                const response = await fetch('/generar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ sentimiento, lugar })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Mostrar prompt
+                    document.getElementById('promptBox').textContent = data.prompt;
+                    
+                    // Mostrar descripción de AI con método de generación
+                    const aiDesc = document.getElementById('aiDescription');
+                    aiDesc.innerHTML = `<strong>Generado con:</strong> ${data.metodo_generacion}<br>${data.descripcion_ai}`;
+
+                    // Cargar audio
+                    const audioPlayer = document.getElementById('audioPlayer');
+                    audioPlayer.src = `/audio/${data.filename}`;
+
+                    // Mostrar características
+                    const infoSentimiento = document.getElementById('infoSentimiento');
+                    infoSentimiento.innerHTML = `
+                        <p><strong>Tempo:</strong> ${data.caracteristicas.sentimiento.tempo}</p>
+                        <p><strong>Tonalidad:</strong> ${data.caracteristicas.sentimiento.tonalidad}</p>
+                    `;
+
+                    const infoLugar = document.getElementById('infoLugar');
+                    infoLugar.innerHTML = `
+                        <p><strong>Ambiente:</strong> ${data.caracteristicas.lugar.ambiente}</p>
+                        <p><strong>Reverb:</strong> ${data.caracteristicas.lugar.reverb}</p>
+                        <p><strong>Sonido:</strong> ${data.caracteristicas.lugar.ruido}</p>
+                    `;
+
+                    loading.style.display = 'none';
+                    resultado.style.display = 'block';
+                } else {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = `Error: ${error.message}`;
+            } finally {
+                generarBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
