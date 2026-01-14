@@ -1,0 +1,69 @@
+# Entorno virtual
+venv/
+env/
+ENV/
+.venv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.Python
+
+# PyTorch y modelos
+*.pth
+*.pt
+*.ckpt
+*.h5
+*.pkl
+*.pickle
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# Variables de entorno
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# Caché
+.cache/
+*.cache
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Datos y archivos grandes
+data/
+datasets/
+*.csv
+*.json
+*.zip
+*.tar.gz
+*.wav
+*.mp3
+*.mp4
+
+# Archivos temporales
+tmp/
+temp/
+*.tmp
